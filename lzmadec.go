@@ -131,16 +131,16 @@ func parseEntryLines(lines []string) (Entry, error) {
 		}
 		name := strings.ToLower(parts[0])
 		v := strings.TrimSpace(parts[1])
+		if v == "" {
+			continue
+		}
 		switch name {
 		case "path":
 			e.Path = v
 		case "size":
 			e.Size, err = strconv.Atoi(v)
 		case "packed size":
-			e.PackedSize = -1
-			if v != "" {
-				e.PackedSize, err = strconv.Atoi(v)
-			}
+			e.PackedSize, err = strconv.Atoi(v)
 		case "modified":
 			e.Modified, err = time.Parse(timeLayout, v)
 		case "attributes":
@@ -152,9 +152,7 @@ func parseEntryLines(lines []string) (Entry, error) {
 		case "method":
 			e.Method = v
 		case "block":
-			if v != "" {
-				e.Block, err = strconv.Atoi(v)
-			}
+			e.Block, err = strconv.Atoi(v)
 		default:
 			err = fmt.Errorf("unexpected entry line '%s'", name)
 		}
