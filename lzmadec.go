@@ -232,6 +232,9 @@ func (rc *readCloser) Close() error {
 func (a *Archive) GetFileReader(index int) (io.ReadCloser, error) {
 	cmd := exec.Command("7z", "x", "-so", a.Path, a.Entries[index].Path)
 	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, err
+	}
 	rc := &readCloser{
 		rc:  stdout,
 		cmd: cmd,
@@ -239,6 +242,7 @@ func (a *Archive) GetFileReader(index int) (io.ReadCloser, error) {
 	err = cmd.Start()
 	if err != nil {
 		stdout.Close()
+		cmd.Wait()
 		return nil, err
 	}
 	return rc, nil
